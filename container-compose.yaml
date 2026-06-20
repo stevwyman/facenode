@@ -1,0 +1,33 @@
+# -------------------------------------------------
+# docker-compose.yml – DeepFace‑Service
+# -------------------------------------------------
+
+services:
+  # -------------------------------------------------
+  # 1️⃣ DeepFace‑Service (lokales Image)
+  # -------------------------------------------------
+  deepface:
+    image: localhost/deepface:latest   # optional – Tag, den du später wiederverwenden kannst
+    container_name: deepface
+    env_file:
+      - .env
+    ports:
+      - "8001:8000"                     # Expose den internen Port 8000 nach außen (für lokalen Test)
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # -------------------------------------------------
+  # 2️⃣ (Optional) deine eigentliche Django‑App
+  # -------------------------------------------------
+  # Wenn du bereits ein `docker-compose.yml` für das Django‑Projekt hast,
+  # füge dort einfach den Service‑Namen `deepface` als Abhängigkeit ein,
+  # z. B.:
+  #   depends_on:
+  #     - deepface
+  # und setze in deinen Django‐Einstellungen:
+  #   COMPREFACE_URL = "http://deepface:8000/api/v1"
+  #   (bzw. wenn du nur das /detect‑Endpoint nutzt, `"http://deepface:8000"`)

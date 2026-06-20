@@ -1,0 +1,5 @@
+fastapi
+uvicorn[standard]
+deepface
+tf-keras
+python-multipart   # für file‑upload
