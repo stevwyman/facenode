@@ -1,7 +1,5 @@
 fastapi
 uvicorn[standard]
 deepface
-tensorflow-cpu  # <--- 🔥 Ersetzt das Standard-TensorFlow im Hintergrund durch die reine CPU-Version
 tf-keras
-python-multipart   # für file‑upload
-opencv-python-headless  # <--- 🔥 Sagt pip, dass wir keine GUI-Pakete wollen
+python-multipart 

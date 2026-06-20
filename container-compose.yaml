@@ -14,11 +14,12 @@ services:
     ports:
       - "8001:8000"                     # Expose den internen Port 8000 nach außen (für lokalen Test)
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+    volumes:
+      - models:/root/.deepface
+
+volumes:
+  models:
+    name: models_data
 
   # -------------------------------------------------
   # 2️⃣ (Optional) deine eigentliche Django‑App
