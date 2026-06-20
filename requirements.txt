@@ -1,5 +1,6 @@
 fastapi
 uvicorn[standard]
 deepface
+tensorflow-cpu  # <--- 🔥 Ersetzt das Standard-TensorFlow im Hintergrund durch die reine CPU-Version
 tf-keras
 python-multipart   # für file‑upload
