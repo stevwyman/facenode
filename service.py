@@ -27,31 +27,33 @@ async def detect_faces(file: UploadFile = File(...)):
     except Exception as exc:
         raise HTTPException(status_code=400, detail=f"Bild‑Lese‑Fehler: {exc}")
 
-    # DeepFace.extract_faces gibt eine Liste von dicts (oder numpy‑Arrays)
-    # Wir setzen detector_backend explizit auf retinaface, weil wir das Modell
-    # bereits heruntergeladen haben (automatischer Download beim ersten Aufruf).
     try:
         detections = DeepFace.extract_faces(
-            img_path=img,               # es kann ein numpy‑Array sein
+            img_path=img,
             detector_backend="retinaface",
-            enforce_detection=False,    # gibt leere Liste zurück, wenn nichts gefunden
-            align=False                 # wir brauchen keine Ausrichtung
+            enforce_detection=False,
+            align=False
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"DeepFace‑Fehler: {exc}")
 
-    # Jede Detektion ist ein dict mit 'region' (bounding box)
-    # Beispiel‑Eintrag: {'face': <ndarray>, 'region': {'x': 124, 'y': 45, 'w': 98, 'h': 98}}
     result = []
     for det in detections:
-        region = det.get('region')
-        if region:
+        # 🔥 HIER IST DER FIX: Der Key heißt 'facial_area'
+        region = det.get('facial_area')
+        
+        # DeepFace liefert mittlerweile bei fast allen Backends (auch RetinaFace) eine Confidence mit!
+        confidence = det.get('confidence', 0.0)
+
+        # Wir prüfen, ob eine Region da ist UND filtern die "Fake"-Gesichter heraus,
+        # die DeepFace bei enforce_detection=False mit confidence=0 anlegt.
+        if region and confidence > 0:
             result.append({
                 "x": int(region["x"]),
                 "y": int(region["y"]),
                 "width": int(region["w"]),
                 "height": int(region["h"]),
-                "confidence": 1.0  # RetinaFace liefert kein Confidence‑Score per DeepFace‑Wrapper
+                "confidence": float(confidence)
             })
 
     return JSONResponse(content={"faces": result})
