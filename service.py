@@ -84,9 +84,12 @@ async def detect_faces(file: UploadFile = File(...)):
 
     result = []
     for det in detections:
+        #print("--- RAW output ---")
+        #print(det)
+        #print("------------------")
         region = det.get('facial_area')
         embedding = det.get('embedding') # Das ist unsere Liste aus 512 Zahlen
-        confidence = det.get('confidence', 0.0)
+        confidence = det.get('face_confidence', 0.0)
 
         # Fake-Treffer filtern
         if region and confidence > 0 and embedding:
